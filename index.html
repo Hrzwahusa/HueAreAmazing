@@ -96,6 +96,15 @@
       background-color: #0056b3;
     }
     
+    .reset-button {
+      background-color: #dc3545;
+      margin-left: 10px;
+    }
+    
+    .reset-button:hover {
+      background-color: #c82333;
+    }
+    
     /* Modal Styles */
     .modal {
       display: none;
@@ -246,8 +255,35 @@
     }
   </style>
 <script>
-  const jsondate = readastext('swatches.json');
- 
+  let jsondata = {};
+  
+  // JSON-Daten aus swatches.json laden
+  async function loadSwatchesData() {
+    try {
+      const response = await fetch('./swatches.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      jsondata = await response.json();
+      console.log('Swatches-Daten erfolgreich geladen:', jsondata);
+      return jsondata;
+    } catch (error) {
+      console.error('Fehler beim Laden der swatches.json:', error);
+      // Fallback für Demo-Zwecke
+      jsondata = {
+        demo: {
+          brand: "Demo Brand (Fallback)",
+          label: "Keine swatches.json gefunden",
+          swatches: [
+            { hex: "#ff0000", label: "Rot" },
+            { hex: "#00ff00", label: "Grün" },
+            { hex: "#0000ff", label: "Blau" }
+          ]
+        }
+      };
+      return jsondata;
+    }
+  }
 </script>
 </head>
 <body>
@@ -279,7 +315,7 @@
           <th><label for="colorPickerrahmen">Rahmenfarbe:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPickerrahmen" name="colorPickerrahmen" value="#ff0000">
+              <input type="color" id="colorPickerrahmen" name="colorPickerrahmen" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPickerrahmen')">Stoffkatalog</button>
               <span id="swatchInfo-colorPickerrahmen" class="swatch-info"></span>
             </div>
@@ -289,7 +325,7 @@
           <th><label for="colorPicker1">Farbe 1:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker1" name="colorPicker1" value="#ff0000">
+              <input type="color" id="colorPicker1" name="colorPicker1" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker1')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker1" class="swatch-info"></span>
             </div>
@@ -299,7 +335,7 @@
           <th><label for="colorPicker2">Farbe 2:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker2" name="colorPicker2" value="#00ff00">
+              <input type="color" id="colorPicker2" name="colorPicker2" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker2')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker2" class="swatch-info"></span>
             </div>
@@ -309,7 +345,7 @@
           <th><label for="colorPicker3">Farbe 3:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker3" name="colorPicker3" value="#0000ff">
+              <input type="color" id="colorPicker3" name="colorPicker3" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker3')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker3" class="swatch-info"></span>
             </div>
@@ -319,7 +355,7 @@
           <th><label for="colorPicker4">Farbe 4:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker4" name="colorPicker4" value="#ffff00">
+              <input type="color" id="colorPicker4" name="colorPicker4" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker4')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker4" class="swatch-info"></span>
             </div>
@@ -329,7 +365,7 @@
           <th><label for="colorPicker5">Farbe 5:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker5" name="colorPicker5" value="#ff00ff">
+              <input type="color" id="colorPicker5" name="colorPicker5" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker5')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker5" class="swatch-info"></span>
             </div>
@@ -339,7 +375,7 @@
           <th><label for="colorPicker6">Farbe 6:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker6" name="colorPicker6" value="#00ffff">
+              <input type="color" id="colorPicker6" name="colorPicker6" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker6')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker6" class="swatch-info"></span>
             </div>
@@ -349,7 +385,7 @@
           <th><label for="colorPicker7">Farbe 7:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker7" name="colorPicker7" value="#ff8000">
+              <input type="color" id="colorPicker7" name="colorPicker7" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker7')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker7" class="swatch-info"></span>
             </div>
@@ -359,7 +395,7 @@
           <th><label for="colorPicker8">Farbe 8:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker8" name="colorPicker8" value="#8000ff">
+              <input type="color" id="colorPicker8" name="colorPicker8" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker8')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker8" class="swatch-info"></span>
             </div>
@@ -369,7 +405,7 @@
           <th><label for="colorPicker9">Farbe 9:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker9" name="colorPicker9" value="#ff0080">
+              <input type="color" id="colorPicker9" name="colorPicker9" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker9')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker9" class="swatch-info"></span>
             </div>
@@ -379,13 +415,14 @@
           <th><label for="colorPicker10">Farbe 10:</label></th>
           <th>
             <div class="color-control">
-              <input type="color" id="colorPicker10" name="colorPicker10" value="#80ff00">
+              <input type="color" id="colorPicker10" name="colorPicker10" value="#ffffff">
               <button class="gallery-button" onclick="openGallery('colorPicker10')">Stoffkatalog</button>
               <span id="swatchInfo-colorPicker10" class="swatch-info"></span>
             </div>
           </th>
         </tr>
       </table>
+      <button class="reset-button" onclick="resetAllColors()">Alle Farben zurücksetzen</button>
     </div>
   </div>
 
@@ -472,6 +509,32 @@
       }
     }
     
+    // Reset-Funktion - vollständig implementiert
+    function resetAllColors() {
+      console.log('Alle Farben werden zurückgesetzt...');
+      
+      // Liste aller Color Picker IDs
+      const pickerIds = [
+        'colorPickerrahmen', 'colorPicker1', 'colorPicker2', 'colorPicker3', 
+        'colorPicker4', 'colorPicker5', 'colorPicker6', 'colorPicker7', 
+        'colorPicker8', 'colorPicker9', 'colorPicker10'
+      ];
+      
+      // Alle Farben auf Weiß setzen
+      pickerIds.forEach(pickerId => {
+        const picker = document.getElementById(pickerId);
+        if (picker) {
+          picker.value = '#ffffff';
+          saveColorToStorage(pickerId, '#ffffff');
+          clearSwatchInfo(pickerId);
+        }
+      });
+      
+      // SVG aktualisieren
+      färbeSVG();
+      console.log('Alle Farben zurückgesetzt');
+    }
+    
     function updateSwatchDisplay(pickerId) {
       const swatchInfoElement = document.getElementById(`swatchInfo-${pickerId}`);
       if (swatchInfoElement) {
@@ -493,10 +556,6 @@
         }
       }
       return null;
-    }
-    
-    function loadColorsFromMemory() {
-      return savedColors;
     }
     
     // Farbe speichern - automatisch bei Änderung
@@ -580,6 +639,12 @@
       
       const brandSelection = document.getElementById('brandSelection');
       
+      // Prüfen ob jsondata geladen wurde
+      if (!jsondata || Object.keys(jsondata).length === 0) {
+        brandSelection.innerHTML = '<p style="text-align: center; color: #666;">Keine Hersteller-Daten verfügbar. Bitte prüfen Sie die swatches.json Datei.</p>';
+        return;
+      }
+      
       // Alle Hersteller aus jsondata anzeigen
       Object.values(jsondata).forEach(brandData => {
         const brandItem = document.createElement('div');
@@ -609,11 +674,6 @@
       
       // Alle Farben anzeigen
       displaySwatches(brandData.swatches, brandData.brand);
-      
-      // Focus auf Suchfeld setzen
-      //setTimeout(() => {
-        //document.getElementById('swatchSearch').focus();
-     // }, 100);
     }
     
     // Swatches anzeigen (gefiltert oder alle)
@@ -749,19 +809,21 @@
     }
     
     // Beim Laden der Seite
-    window.addEventListener('load', function() {
+    window.addEventListener('load', async function() {
       console.log('Seite geladen');
+      // Erst JSON-Daten laden, dann Farben initialisieren
+      await loadSwatchesData();
       initializeColors();
     });
     
     // Zusätzlich bei DOMContentLoaded für frühere Initialisierung
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       console.log('DOM bereit');
+      // Erst JSON-Daten laden, dann Farben initialisieren
+      await loadSwatchesData();
       initializeColors();
     });
   </script>
  
 </body>
 </html>
-
-
