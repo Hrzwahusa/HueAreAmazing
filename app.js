@@ -71,14 +71,15 @@ function populateSVGDropdown() {
     
     // Spezielle Behandlung für deine Dateien
     if (filename === 'svg_10x10.txt') {
-      displayName = '10x10 Raster';
+      displayName = '10x10 Blöcke';
     } else if (filename === 'svg_10x8.txt') {
-      displayName = '10x8 Raster';
+      displayName = '10x8 Blöcke';
     } else {
       // Allgemeine Behandlung für andere Dateien
       displayName = displayName
         .replace(/[_-]/g, ' ')
         .replace(/\b\w/g, l => l.toUpperCase());
+      displayName = displayName + ' Blöcke';
     }
     
     option.textContent = displayName;
