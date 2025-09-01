@@ -4,6 +4,38 @@ let colorPickerMapping = {}; // Mapping zwischen Picker-IDs und SVG-Element-IDs
 let availableSVGFiles = []; // Liste der verfügbaren SVG-Dateien
 let currentSVGFile = ''; // Aktuell geladene SVG-Datei für separates Speichern
 
+
+
+function calculateMeasurements() {
+  console.log('calculateMeasurements() wurde aufgerufen');
+  const stripWidth = parseFloat(document.getElementById('stripWidth').value) || 0;
+  const columns = parseInt(document.getElementById('columns').value) || 1;
+  const rows = parseInt(document.getElementById('rows').value) || 1;
+  const frameWidth = parseFloat(document.getElementById('frameWidth').value) || 0;
+  
+  const blockSize = stripWidth * 10;
+  const finalWidthNoFrame = blockSize * columns;
+  const finalHeightNoFrame = blockSize * rows;
+  const finalWidthWithFrame = finalWidthNoFrame + (frameWidth * 2);
+  const finalHeightWithFrame = finalHeightNoFrame + (frameWidth * 2);
+  
+  const inchToCm = 2.54;
+  
+  document.getElementById('blockSize').textContent = blockSize.toFixed(1) + ' inch';
+  document.getElementById('finalWidthNoFrame').textContent = finalWidthNoFrame.toFixed(1) + ' inch (' + (finalWidthNoFrame * inchToCm).toFixed(1) + ' cm)';
+  document.getElementById('finalHeightNoFrame').textContent = finalHeightNoFrame.toFixed(1) + ' inch (' + (finalHeightNoFrame * inchToCm).toFixed(1) + ' cm)';
+  document.getElementById('finalWidthWithFrame').textContent = finalWidthWithFrame.toFixed(1) + ' inch (' + (finalWidthWithFrame * inchToCm).toFixed(1) + ' cm)';
+  document.getElementById('finalHeightWithFrame').textContent = finalHeightWithFrame.toFixed(1) + ' inch (' + (finalHeightWithFrame * inchToCm).toFixed(1) + ' cm)';
+}
+setTimeout(() => {
+  document.getElementById('stripWidth').addEventListener('input', calculateMeasurements);
+  document.getElementById('columns').addEventListener('input', calculateMeasurements);
+  document.getElementById('rows').addEventListener('input', calculateMeasurements);
+  document.getElementById('frameWidth').addEventListener('input', calculateMeasurements);
+  calculateMeasurements();
+  console.log('Calculator initialisiert');
+}, 200);
+
 // Verfügbare SVG-Dateien aus JSON laden
 async function loadAvailableSVGFiles() {
   try {
@@ -552,6 +584,8 @@ function restoreColorsAfterCreation() {
   setTimeout(restoreValues, 100);
 }
 
+
+
 // Initialisierung beim Laden
 setTimeout(() => {
   loadAvailableSVGFiles(); // Lädt automatisch die erste verfügbare SVG-Datei
@@ -562,3 +596,332 @@ setTimeout(() => {
     // initializeColors wird automatisch nach der Picker-Erstellung aufgerufen
   });
 }, 200);
+
+// Dynamische ViewBox-Anpassung - Hauptfunktion
+function adjustViewBoxToContent() {
+  const svg = document.getElementById('svgbox');
+  
+  if (!svg || svg.children.length === 0) {
+    return;
+  }
+  
+  try {
+    // Warte kurz bis alle Elemente gerendert sind
+    requestAnimationFrame(() => {
+      const bbox = svg.getBBox();
+      
+      // Intelligentes Padding basierend auf Größe
+      const padding = Math.max(10, Math.min(bbox.width, bbox.height) * 0.05);
+      
+      // ViewBox mit optimaler Zentrierung
+      const newViewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`;
+      svg.setAttribute('viewBox', newViewBox);
+      
+      console.log('ViewBox dynamisch angepasst:', newViewBox);
+      
+      // Event für andere Komponenten
+      svg.dispatchEvent(new CustomEvent('viewboxUpdated', { 
+        detail: { viewBox: newViewBox, bbox: bbox }
+      }));
+    });
+    
+  } catch (error) {
+    console.warn('Fehler beim Anpassen der ViewBox:', error);
+    // Fallback: Versuche es mit Standard-Dimensionen
+    svg.setAttribute('viewBox', '0 0 670 670');
+  }
+}
+
+// Dynamische ViewBox-Anpassung - Hauptfunktion
+function adjustViewBoxToContent() {
+  const svg = document.getElementById('svgbox');
+  
+  if (!svg || svg.children.length === 0) {
+    return;
+  }
+  
+  try {
+    // Warte kurz bis alle Elemente gerendert sind
+    requestAnimationFrame(() => {
+      const bbox = svg.getBBox();
+      
+      // Intelligentes Padding basierend auf Größe
+      const padding = Math.max(10, Math.min(bbox.width, bbox.height) * 0.05);
+      
+      // ViewBox mit optimaler Zentrierung
+      const newViewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`;
+      svg.setAttribute('viewBox', newViewBox);
+      
+      console.log('ViewBox dynamisch angepasst:', newViewBox);
+      
+      // Event für andere Komponenten
+      svg.dispatchEvent(new CustomEvent('viewboxUpdated', { 
+        detail: { viewBox: newViewBox, bbox: bbox }
+      }));
+    });
+    
+  } catch (error) {
+    console.warn('Fehler beim Anpassen der ViewBox:', error);
+    // Fallback: Versuche es mit Standard-Dimensionen
+    svg.setAttribute('viewBox', '0 0 670 670');
+  }
+}
+
+// Dynamischer Observer für Echtzeit-Updates
+function setupDynamicViewBoxObserver() {
+  const svg = document.getElementById('svgbox');
+  
+  if (!svg) return null;
+  
+  // Debouncing für Performance
+  let updateTimeout;
+  const debouncedUpdate = () => {
+    clearTimeout(updateTimeout);
+    updateTimeout = setTimeout(adjustViewBoxToContent, 150);
+  };
+  
+  // MutationObserver für DOM-Änderungen
+  const mutationObserver = new MutationObserver((mutations) => {
+    let shouldUpdate = false;
+    
+    mutations.forEach((mutation) => {
+      // Prüfe auf relevante Änderungen
+      if (mutation.type === 'childList') {
+        shouldUpdate = true;
+      } else if (mutation.type === 'attributes') {
+        const relevantAttributes = ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform'];
+        if (relevantAttributes.includes(mutation.attributeName)) {
+          shouldUpdate = true;
+        }
+      }
+    });
+    
+    if (shouldUpdate) {
+      debouncedUpdate();
+    }
+  });
+  
+  // Observer starten
+  mutationObserver.observe(svg, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform', 'fill', 'stroke']
+  });
+  
+  // ResizeObserver für Größenänderungen (falls unterstützt)
+  let resizeObserver = null;
+  if (window.ResizeObserver) {
+    resizeObserver = new ResizeObserver(() => {
+      debouncedUpdate();
+    });
+    resizeObserver.observe(svg);
+  }
+  
+  console.log('Dynamischer ViewBox Observer aktiviert');
+  
+  return {
+    mutationObserver,
+    resizeObserver,
+    destroy() {
+      mutationObserver.disconnect();
+      if (resizeObserver) resizeObserver.disconnect();
+      clearTimeout(updateTimeout);
+      console.log('ViewBox Observer deaktiviert');
+    }
+  };
+}
+
+// Automatische Initialisierung - füge dies am Ende deiner app.js hinzu
+let dynamicViewBoxObserver = null;
+
+// Initialisierung beim Laden der Seite
+function initializeDynamicViewBox() {
+  // Observer setup
+  dynamicViewBoxObserver = setupDynamicViewBoxObserver();
+  
+  // Event Listener für SVG-Laden
+  const svgSelector = document.getElementById('svgSelector');
+  if (svgSelector) {
+    svgSelector.addEventListener('change', () => {
+      // Kurze Verzögerung für SVG-Laden
+      setTimeout(adjustViewBoxToContent, 200);
+    });
+  }
+  
+  // Event Listener für Farbänderungen (falls diese die Größe beeinflussen)
+  document.addEventListener('change', (e) => {
+    if (e.target.type === 'color') {
+      // Sehr kurze Verzögerung für Farbänderungen
+      setTimeout(adjustViewBoxToContent, 50);
+    }
+  });
+  
+  // Initiale Anpassung falls bereits Inhalt vorhanden
+  setTimeout(adjustViewBoxToContent, 100);
+  
+  console.log('Dynamische ViewBox-Anpassung initialisiert');
+}
+
+// Cleanup-Funktion
+function cleanupDynamicViewBox() {
+  if (dynamicViewBoxObserver) {
+    dynamicViewBoxObserver.destroy();
+    dynamicViewBoxObserver = null;
+  }
+}
+
+// Auto-Start wenn DOM bereit ist
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeDynamicViewBox);
+} else {
+  initializeDynamicViewBox();
+}
+
+// Cleanup beim Verlassen der Seite
+window.addEventListener('beforeunload', cleanupDynamicViewBox);
+
+// Zusätzliche Hilfsfunktionen für Debugging und manuelle Kontrolle
+function logCurrentViewBox() {
+  const svg = document.getElementById('svgbox');
+  if (svg) {
+    console.log('Aktuelle ViewBox:', svg.getAttribute('viewBox'));
+    console.log('SVG Bounding Box:', svg.getBBox());
+  }
+}
+
+// Manuelle ViewBox-Anpassung für Testing
+function setCustomViewBox(x, y, width, height) {
+  const svg = document.getElementById('svgbox');
+  if (svg) {
+    svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
+    console.log(`ViewBox manuell gesetzt: ${x} ${y} ${width} ${height}`);
+  }
+}
+
+// Force Update der ViewBox
+function forceViewBoxUpdate() {
+  adjustViewBoxToContent();
+}
+
+// Funktion zur manuellen ViewBox-Anpassung (für Testing)
+function setCustomViewBox(x, y, width, height) {
+  const svg = document.getElementById('svgbox');
+  if (svg) {
+    svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
+  }
+}
+
+// Dynamischer Observer für Echtzeit-Updates
+function setupDynamicViewBoxObserver() {
+  const svg = document.getElementById('svgbox');
+  
+  if (!svg) return null;
+  
+  // Debouncing für Performance
+  let updateTimeout;
+  const debouncedUpdate = () => {
+    clearTimeout(updateTimeout);
+    updateTimeout = setTimeout(adjustViewBoxToContent, 150);
+  };
+  
+  // MutationObserver für DOM-Änderungen
+  const mutationObserver = new MutationObserver((mutations) => {
+    let shouldUpdate = false;
+    
+    mutations.forEach((mutation) => {
+      // Prüfe auf relevante Änderungen
+      if (mutation.type === 'childList') {
+        shouldUpdate = true;
+      } else if (mutation.type === 'attributes') {
+        const relevantAttributes = ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform'];
+        if (relevantAttributes.includes(mutation.attributeName)) {
+          shouldUpdate = true;
+        }
+      }
+    });
+    
+    if (shouldUpdate) {
+      debouncedUpdate();
+    }
+  });
+  
+  // Observer starten
+  mutationObserver.observe(svg, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform', 'fill', 'stroke']
+  });
+  
+  // ResizeObserver für Größenänderungen (falls unterstützt)
+  let resizeObserver = null;
+  if (window.ResizeObserver) {
+    resizeObserver = new ResizeObserver(() => {
+      debouncedUpdate();
+    });
+    resizeObserver.observe(svg);
+  }
+  
+  console.log('Dynamischer ViewBox Observer aktiviert');
+  
+  return {
+    mutationObserver,
+    resizeObserver,
+    destroy() {
+      mutationObserver.disconnect();
+      if (resizeObserver) resizeObserver.disconnect();
+      clearTimeout(updateTimeout);
+      console.log('ViewBox Observer deaktiviert');
+    }
+  };
+}
+
+// Automatische Initialisierung - füge dies am Ende deiner app.js hinzu
+let viewBoxObserver = null;
+
+// Initialisierung beim Laden der Seite
+function initializeDynamicViewBox() {
+  // Observer setup
+  viewBoxObserver = setupDynamicViewBoxObserver();
+  
+  // Event Listener für SVG-Laden
+  const svgSelector = document.getElementById('svgSelector');
+  if (svgSelector) {
+    svgSelector.addEventListener('change', () => {
+      // Kurze Verzögerung für SVG-Laden
+      setTimeout(adjustViewBoxToContent, 200);
+    });
+  }
+  
+  // Event Listener für Farbänderungen (falls diese die Größe beeinflussen)
+  document.addEventListener('change', (e) => {
+    if (e.target.type === 'color') {
+      // Sehr kurze Verzögerung für Farbänderungen
+      setTimeout(adjustViewBoxToContent, 50);
+    }
+  });
+  
+  // Initiale Anpassung falls bereits Inhalt vorhanden
+  setTimeout(adjustViewBoxToContent, 100);
+  
+  console.log('Dynamische ViewBox-Anpassung initialisiert');
+}
+
+// Cleanup-Funktion
+function cleanupDynamicViewBox() {
+  if (viewBoxObserver) {
+    viewBoxObserver.destroy();
+    viewBoxObserver = null;
+  }
+}
+
+// Auto-Start wenn DOM bereit ist
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeDynamicViewBox);
+} else {
+  initializeDynamicViewBox();
+}
+
+// Cleanup beim Verlassen der Seite
+window.addEventListener('beforeunload', cleanupDynamicViewBox);

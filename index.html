@@ -305,11 +305,11 @@
       }
       
       .svg-container {
-        width: 50%;
+        width: 60%;
       }
       
       .controls-container {
-        width: 50%;
+        width: 40%;
         padding-left: 20px;
       }
     }
@@ -331,14 +331,64 @@
       </svg>
     </div>
     
-    <div class="controls-container">
+      <div class="controls-container">
       <div id="colorPickersContainer">
         <!-- Farbpicker werden hier dynamisch erstellt -->
         <p>Lade SVG-Daten...</p>
       </div>
       <button class="reset-button" onclick="resetAllColors()">Alle Farben zurücksetzen</button>
+      
+      <!-- Maß-Rechner -->
+      <div class="measurement-calculator">
+        <h3>Maß-Rechner</h3>
+        <table class="calc-table">
+          <tr>
+            <td><label for="stripWidth">Streifenbreite:</label></td>
+            <td>
+              <input type="number" id="stripWidth" step="0.125" min="0" value="0.75"> inch (zzgl. NZ)
+            </td>
+          </tr>
+          <tr>
+            <td><label>Blockgröße:</label></td>
+            <td id="blockSize">-</td>
+          </tr>
+          <tr>
+            <td><label for="columns">Anzahl Spalten:</label></td>
+            <td>
+              <input type="number" id="columns" min="1" value="10">
+            </td>
+          </tr>
+          <tr>
+            <td><label for="rows">Anzahl Zeilen:</label></td>
+            <td>
+              <input type="number" id="rows" min="1" value="10">
+            </td>
+          </tr>
+          <tr>
+            <td><label>Finale Breite ohne Rahmen:</label></td>
+            <td id="finalWidthNoFrame">-</td>
+          </tr>
+          <tr>
+            <td><label>Finale Höhe ohne Rahmen:</label></td>
+            <td id="finalHeightNoFrame">-</td>
+          </tr>
+          <tr>
+            <td><label for="frameWidth">Rahmenbreite:</label></td>
+            <td>
+              <input type="number" id="frameWidth" step="0.125" min="0" value="2.5"> inch (zzgl. NZ)
+            </td>
+          </tr>
+          <tr>
+            <td><label>Finale Breite mit Rahmen:</label></td>
+            <td id="finalWidthWithFrame">-</td>
+          </tr>
+          <tr>
+            <td><label>Finale Höhe mit Rahmen:</label></td>
+            <td id="finalHeightWithFrame">-</td>
+          </tr>
+        </table>
+      </div>
     </div>
-  </div>
 
   <!-- Modal für Farbgalerie -->
   <div id="colorModal" class="modal">
@@ -350,6 +400,7 @@
 
   <!-- JavaScript aufgeteilt -->
   <script src="app.js"></script>
+
 </body>
 
 </html>
