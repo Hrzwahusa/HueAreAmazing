@@ -4,37 +4,181 @@ let colorPickerMapping = {}; // Mapping zwischen Picker-IDs und SVG-Element-IDs
 let availableSVGFiles = []; // Liste der verfügbaren SVG-Dateien
 let currentSVGFile = ''; // Aktuell geladene SVG-Datei für separates Speichern
 
-
-
+// Maß-Rechner Funktionen - direkt am Anfang definieren!
 function calculateMeasurements() {
   console.log('calculateMeasurements() wurde aufgerufen');
-  const stripWidth = parseFloat(document.getElementById('stripWidth').value) || 0;
-  const columns = parseInt(document.getElementById('columns').value) || 1;
-  const rows = parseInt(document.getElementById('rows').value) || 1;
-  const frameWidth = parseFloat(document.getElementById('frameWidth').value) || 0;
   
+  // Eingabewerte holen
+  const stripWidthEl = document.getElementById('stripWidth');
+  const columnsEl = document.getElementById('columns');
+  const rowsEl = document.getElementById('rows');
+  const frameWidthEl = document.getElementById('frameWidth');
+  
+  if (!stripWidthEl || !columnsEl || !rowsEl || !frameWidthEl) {
+    console.log('Nicht alle Input-Elemente gefunden');
+    return;
+  }
+  
+  const stripWidth = parseFloat(stripWidthEl.value) || 0;
+  const columns = parseInt(columnsEl.value) || 1;
+  const rows = parseInt(rowsEl.value) || 1;
+  const frameWidth = parseFloat(frameWidthEl.value) || 0;
+  
+  console.log('Werte:', {stripWidth, columns, rows, frameWidth});
+  
+  // Berechnungen
   const blockSize = stripWidth * 10;
   const finalWidthNoFrame = blockSize * columns;
   const finalHeightNoFrame = blockSize * rows;
   const finalWidthWithFrame = finalWidthNoFrame + (frameWidth * 2);
   const finalHeightWithFrame = finalHeightNoFrame + (frameWidth * 2);
   
+  // Umrechnung von Inch zu cm (1 inch = 2.54 cm)
   const inchToCm = 2.54;
   
-  document.getElementById('blockSize').textContent = blockSize.toFixed(1) + ' inch';
-  document.getElementById('finalWidthNoFrame').textContent = finalWidthNoFrame.toFixed(1) + ' inch (' + (finalWidthNoFrame * inchToCm).toFixed(1) + ' cm)';
-  document.getElementById('finalHeightNoFrame').textContent = finalHeightNoFrame.toFixed(1) + ' inch (' + (finalHeightNoFrame * inchToCm).toFixed(1) + ' cm)';
-  document.getElementById('finalWidthWithFrame').textContent = finalWidthWithFrame.toFixed(1) + ' inch (' + (finalWidthWithFrame * inchToCm).toFixed(1) + ' cm)';
-  document.getElementById('finalHeightWithFrame').textContent = finalHeightWithFrame.toFixed(1) + ' inch (' + (finalHeightWithFrame * inchToCm).toFixed(1) + ' cm)';
+  // Ergebnisse anzeigen
+  const blockSizeEl = document.getElementById('blockSize');
+  const finalWidthNoFrameEl = document.getElementById('finalWidthNoFrame');
+  const finalHeightNoFrameEl = document.getElementById('finalHeightNoFrame');
+  const finalWidthWithFrameEl = document.getElementById('finalWidthWithFrame');
+  const finalHeightWithFrameEl = document.getElementById('finalHeightWithFrame');
+  
+  if (blockSizeEl) {
+    blockSizeEl.textContent = blockSize.toFixed(1) + ' inch';
+  }
+  if (finalWidthNoFrameEl) {
+    finalWidthNoFrameEl.textContent = 
+      finalWidthNoFrame.toFixed(1) + ' inch (' + (finalWidthNoFrame * inchToCm).toFixed(1) + ' cm)';
+  }
+  if (finalHeightNoFrameEl) {
+    finalHeightNoFrameEl.textContent = 
+      finalHeightNoFrame.toFixed(1) + ' inch (' + (finalHeightNoFrame * inchToCm).toFixed(1) + ' cm)';
+  }
+  if (finalWidthWithFrameEl) {
+    finalWidthWithFrameEl.textContent = 
+      finalWidthWithFrame.toFixed(1) + ' inch (' + (finalWidthWithFrame * inchToCm).toFixed(1) + ' cm)';
+  }
+  if (finalHeightWithFrameEl) {
+    finalHeightWithFrameEl.textContent = 
+      finalHeightWithFrame.toFixed(1) + ' inch (' + (finalHeightWithFrame * inchToCm).toFixed(1) + ' cm)';
+  }
+  
+  console.log('Berechnungen abgeschlossen');
 }
-setTimeout(() => {
-  document.getElementById('stripWidth').addEventListener('input', calculateMeasurements);
-  document.getElementById('columns').addEventListener('input', calculateMeasurements);
-  document.getElementById('rows').addEventListener('input', calculateMeasurements);
-  document.getElementById('frameWidth').addEventListener('input', calculateMeasurements);
-  calculateMeasurements();
-  console.log('Calculator initialisiert');
-}, 200);
+
+// Funktion global verfügbar machen
+window.calculateMeasurements = calculateMeasurements;
+
+// Drag and Drop Funktionalität für Farbpicker
+let draggedElement = null;
+let draggedData = null;
+
+function makeDraggable() {
+  const colorRows = document.querySelectorAll('.color-row');
+  console.log('Gefundene Color-Rows für Drag and Drop:', colorRows.length);
+  
+  if (colorRows.length === 0) {
+    console.log('Keine .color-row Elemente gefunden - Drag and Drop nicht aktiviert');
+    return;
+  }
+  
+  colorRows.forEach((row, index) => {
+    console.log(`Aktiviere Drag and Drop für Zeile ${index + 1}`);
+    row.addEventListener('dragstart', handleDragStart);
+    row.addEventListener('dragover', handleDragOver);
+    row.addEventListener('drop', handleDrop);
+    row.addEventListener('dragend', handleDragEnd);
+    row.addEventListener('dragenter', handleDragEnter);
+    row.addEventListener('dragleave', handleDragLeave);
+  });
+  
+  console.log('Drag and Drop Event Listeners für alle Zeilen hinzugefügt');
+}
+
+function handleDragStart(e) {
+  draggedElement = this;
+  this.classList.add('dragging');
+  
+  const colorInput = this.querySelector('input[type="color"]');
+  const swatchInfo = this.querySelector('.swatch-info');
+  const label = this.querySelector('label');
+  
+  draggedData = {
+    pickerId: colorInput.id,
+    color: colorInput.value,
+    swatchText: swatchInfo.textContent,
+    labelText: label.textContent
+  };
+  
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+function handleDragEnter(e) {
+  if (this !== draggedElement) {
+    this.classList.add('drag-over');
+  }
+}
+
+function handleDragLeave(e) {
+  this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  
+  if (this !== draggedElement) {
+    const targetColorInput = this.querySelector('input[type="color"]');
+    const targetSwatchInfo = this.querySelector('.swatch-info');
+    const targetLabel = this.querySelector('label');
+    
+    const targetData = {
+      pickerId: targetColorInput.id,
+      color: targetColorInput.value,
+      swatchText: targetSwatchInfo.textContent,
+      labelText: targetLabel.textContent
+    };
+    
+    // Tausche die Farben
+    targetColorInput.value = draggedData.color;
+    draggedElement.querySelector('input[type="color"]').value = targetData.color;
+    
+    // Tausche die Swatch-Infos
+    targetSwatchInfo.textContent = draggedData.swatchText;
+    draggedElement.querySelector('.swatch-info').textContent = targetData.swatchText;
+    
+    // Speichere die neuen Farben
+    saveColorToStorage(draggedData.pickerId, targetData.color);
+    saveColorToStorage(targetData.pickerId, draggedData.color);
+    saveSwatchInfo(draggedData.pickerId, targetData.swatchText);
+    saveSwatchInfo(targetData.pickerId, draggedData.swatchText);
+    
+    // Aktualisiere das SVG
+    färbeSVG();
+    
+    console.log('Farben getauscht:', draggedData.pickerId, '↔', targetData.pickerId);
+  }
+  
+  return false;
+}
+
+function handleDragEnd(e) {
+  this.classList.remove('dragging');
+  document.querySelectorAll('.color-row').forEach(row => {
+    row.classList.remove('drag-over');
+  });
+  draggedElement = null;
+  draggedData = null;
+}
 
 // Verfügbare SVG-Dateien aus JSON laden
 async function loadAvailableSVGFiles() {
@@ -218,8 +362,11 @@ function createColorPickers(elementIds) {
     colorPickerMapping[pickerId] = elementId;
     
     tableHTML += `
-      <tr>
-        <th><label for="${pickerId}">${label}:</label></th>
+      <tr class="color-row" draggable="true">
+        <th>
+          <span class="drag-handle">⋮⋮</span>
+          <label for="${pickerId}">${label}:</label>
+        </th>
         <th>
           <div class="color-control">
             <input type="color" id="${pickerId}" name="${pickerId}" value="#ffffff">
@@ -241,6 +388,12 @@ function createColorPickers(elementIds) {
   
   // Gespeicherte Farben wiederherstellen
   restoreColorsAfterCreation();
+  
+  // Drag and Drop für die neuen Picker aktivieren
+  setTimeout(() => {
+    makeDraggable();
+    console.log('Drag and Drop für Farbpicker aktiviert');
+  }, 200);
 }
 
 // JSON-Daten aus swatches.json laden
@@ -584,7 +737,24 @@ function restoreColorsAfterCreation() {
   setTimeout(restoreValues, 100);
 }
 
-
+// Event Listener Initialisierung
+function initializeAllEventListeners() {
+  // Calculator Event Listener
+  setTimeout(() => {
+    const stripWidthEl = document.getElementById('stripWidth');
+    const columnsEl = document.getElementById('columns');
+    const rowsEl = document.getElementById('rows');
+    const frameWidthEl = document.getElementById('frameWidth');
+    
+    if (stripWidthEl) stripWidthEl.addEventListener('input', calculateMeasurements);
+    if (columnsEl) columnsEl.addEventListener('input', calculateMeasurements);
+    if (rowsEl) rowsEl.addEventListener('input', calculateMeasurements);
+    if (frameWidthEl) frameWidthEl.addEventListener('input', calculateMeasurements);
+    
+    calculateMeasurements(); // Erste Berechnung beim Laden
+    console.log('Calculator Event Listeners hinzugefügt');
+  }, 1500);
+}
 
 // Initialisierung beim Laden
 setTimeout(() => {
@@ -597,331 +767,49 @@ setTimeout(() => {
   });
 }, 200);
 
-// Dynamische ViewBox-Anpassung - Hauptfunktion
-function adjustViewBoxToContent() {
-  const svg = document.getElementById('svgbox');
+// Funktion zum Hinzufügen der Event Listener für den Rechner
+function initializeCalculatorEvents() {
+  const stripWidthEl = document.getElementById('stripWidth');
+  const columnsEl = document.getElementById('columns');
+  const rowsEl = document.getElementById('rows');
+  const frameWidthEl = document.getElementById('frameWidth');
   
-  if (!svg || svg.children.length === 0) {
-    return;
+  if (stripWidthEl) {
+    stripWidthEl.addEventListener('input', calculateMeasurements);
+    stripWidthEl.addEventListener('change', calculateMeasurements);
+  }
+  if (columnsEl) {
+    columnsEl.addEventListener('input', calculateMeasurements);
+    columnsEl.addEventListener('change', calculateMeasurements);
+  }
+  if (rowsEl) {
+    rowsEl.addEventListener('input', calculateMeasurements);
+    rowsEl.addEventListener('change', calculateMeasurements);
+  }
+  if (frameWidthEl) {
+    frameWidthEl.addEventListener('input', calculateMeasurements);
+    frameWidthEl.addEventListener('change', calculateMeasurements);
   }
   
-  try {
-    // Warte kurz bis alle Elemente gerendert sind
-    requestAnimationFrame(() => {
-      const bbox = svg.getBBox();
-      
-      // Intelligentes Padding basierend auf Größe
-      const padding = Math.max(10, Math.min(bbox.width, bbox.height) * 0.05);
-      
-      // ViewBox mit optimaler Zentrierung
-      const newViewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`;
-      svg.setAttribute('viewBox', newViewBox);
-      
-      console.log('ViewBox dynamisch angepasst:', newViewBox);
-      
-      // Event für andere Komponenten
-      svg.dispatchEvent(new CustomEvent('viewboxUpdated', { 
-        detail: { viewBox: newViewBox, bbox: bbox }
-      }));
-    });
-    
-  } catch (error) {
-    console.warn('Fehler beim Anpassen der ViewBox:', error);
-    // Fallback: Versuche es mit Standard-Dimensionen
-    svg.setAttribute('viewBox', '0 0 670 670');
-  }
+  console.log('Calculator Event Listeners hinzugefügt');
 }
 
-// Dynamische ViewBox-Anpassung - Hauptfunktion
-function adjustViewBoxToContent() {
-  const svg = document.getElementById('svgbox');
-  
-  if (!svg || svg.children.length === 0) {
-    return;
-  }
-  
-  try {
-    // Warte kurz bis alle Elemente gerendert sind
-    requestAnimationFrame(() => {
-      const bbox = svg.getBBox();
-      
-      // Intelligentes Padding basierend auf Größe
-      const padding = Math.max(10, Math.min(bbox.width, bbox.height) * 0.05);
-      
-      // ViewBox mit optimaler Zentrierung
-      const newViewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`;
-      svg.setAttribute('viewBox', newViewBox);
-      
-      console.log('ViewBox dynamisch angepasst:', newViewBox);
-      
-      // Event für andere Komponenten
-      svg.dispatchEvent(new CustomEvent('viewboxUpdated', { 
-        detail: { viewBox: newViewBox, bbox: bbox }
-      }));
-    });
-    
-  } catch (error) {
-    console.warn('Fehler beim Anpassen der ViewBox:', error);
-    // Fallback: Versuche es mit Standard-Dimensionen
-    svg.setAttribute('viewBox', '0 0 670 670');
-  }
-}
-
-// Dynamischer Observer für Echtzeit-Updates
-function setupDynamicViewBoxObserver() {
-  const svg = document.getElementById('svgbox');
-  
-  if (!svg) return null;
-  
-  // Debouncing für Performance
-  let updateTimeout;
-  const debouncedUpdate = () => {
-    clearTimeout(updateTimeout);
-    updateTimeout = setTimeout(adjustViewBoxToContent, 150);
-  };
-  
-  // MutationObserver für DOM-Änderungen
-  const mutationObserver = new MutationObserver((mutations) => {
-    let shouldUpdate = false;
-    
-    mutations.forEach((mutation) => {
-      // Prüfe auf relevante Änderungen
-      if (mutation.type === 'childList') {
-        shouldUpdate = true;
-      } else if (mutation.type === 'attributes') {
-        const relevantAttributes = ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform'];
-        if (relevantAttributes.includes(mutation.attributeName)) {
-          shouldUpdate = true;
-        }
-      }
-    });
-    
-    if (shouldUpdate) {
-      debouncedUpdate();
+// Besserer Ansatz: Event Listener verwenden
+document.addEventListener('DOMContentLoaded', function() {
+  // Warte bis alle Inhalte geladen sind
+  function initCalculator() {
+    if (document.getElementById('stripWidth') && 
+        document.getElementById('columns') && 
+        document.getElementById('rows') && 
+        document.getElementById('frameWidth')) {
+      initializeCalculatorEvents();
+      calculateMeasurements();
+    } else {
+      // Falls Elemente noch nicht da sind, nochmal versuchen
+      setTimeout(initCalculator, 100);
     }
-  });
-  
-  // Observer starten
-  mutationObserver.observe(svg, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform', 'fill', 'stroke']
-  });
-  
-  // ResizeObserver für Größenänderungen (falls unterstützt)
-  let resizeObserver = null;
-  if (window.ResizeObserver) {
-    resizeObserver = new ResizeObserver(() => {
-      debouncedUpdate();
-    });
-    resizeObserver.observe(svg);
   }
   
-  console.log('Dynamischer ViewBox Observer aktiviert');
-  
-  return {
-    mutationObserver,
-    resizeObserver,
-    destroy() {
-      mutationObserver.disconnect();
-      if (resizeObserver) resizeObserver.disconnect();
-      clearTimeout(updateTimeout);
-      console.log('ViewBox Observer deaktiviert');
-    }
-  };
-}
-
-// Automatische Initialisierung - füge dies am Ende deiner app.js hinzu
-let dynamicViewBoxObserver = null;
-
-// Initialisierung beim Laden der Seite
-function initializeDynamicViewBox() {
-  // Observer setup
-  dynamicViewBoxObserver = setupDynamicViewBoxObserver();
-  
-  // Event Listener für SVG-Laden
-  const svgSelector = document.getElementById('svgSelector');
-  if (svgSelector) {
-    svgSelector.addEventListener('change', () => {
-      // Kurze Verzögerung für SVG-Laden
-      setTimeout(adjustViewBoxToContent, 200);
-    });
-  }
-  
-  // Event Listener für Farbänderungen (falls diese die Größe beeinflussen)
-  document.addEventListener('change', (e) => {
-    if (e.target.type === 'color') {
-      // Sehr kurze Verzögerung für Farbänderungen
-      setTimeout(adjustViewBoxToContent, 50);
-    }
-  });
-  
-  // Initiale Anpassung falls bereits Inhalt vorhanden
-  setTimeout(adjustViewBoxToContent, 100);
-  
-  console.log('Dynamische ViewBox-Anpassung initialisiert');
-}
-
-// Cleanup-Funktion
-function cleanupDynamicViewBox() {
-  if (dynamicViewBoxObserver) {
-    dynamicViewBoxObserver.destroy();
-    dynamicViewBoxObserver = null;
-  }
-}
-
-// Auto-Start wenn DOM bereit ist
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeDynamicViewBox);
-} else {
-  initializeDynamicViewBox();
-}
-
-// Cleanup beim Verlassen der Seite
-window.addEventListener('beforeunload', cleanupDynamicViewBox);
-
-// Zusätzliche Hilfsfunktionen für Debugging und manuelle Kontrolle
-function logCurrentViewBox() {
-  const svg = document.getElementById('svgbox');
-  if (svg) {
-    console.log('Aktuelle ViewBox:', svg.getAttribute('viewBox'));
-    console.log('SVG Bounding Box:', svg.getBBox());
-  }
-}
-
-// Manuelle ViewBox-Anpassung für Testing
-function setCustomViewBox(x, y, width, height) {
-  const svg = document.getElementById('svgbox');
-  if (svg) {
-    svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
-    console.log(`ViewBox manuell gesetzt: ${x} ${y} ${width} ${height}`);
-  }
-}
-
-// Force Update der ViewBox
-function forceViewBoxUpdate() {
-  adjustViewBoxToContent();
-}
-
-// Funktion zur manuellen ViewBox-Anpassung (für Testing)
-function setCustomViewBox(x, y, width, height) {
-  const svg = document.getElementById('svgbox');
-  if (svg) {
-    svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
-  }
-}
-
-// Dynamischer Observer für Echtzeit-Updates
-function setupDynamicViewBoxObserver() {
-  const svg = document.getElementById('svgbox');
-  
-  if (!svg) return null;
-  
-  // Debouncing für Performance
-  let updateTimeout;
-  const debouncedUpdate = () => {
-    clearTimeout(updateTimeout);
-    updateTimeout = setTimeout(adjustViewBoxToContent, 150);
-  };
-  
-  // MutationObserver für DOM-Änderungen
-  const mutationObserver = new MutationObserver((mutations) => {
-    let shouldUpdate = false;
-    
-    mutations.forEach((mutation) => {
-      // Prüfe auf relevante Änderungen
-      if (mutation.type === 'childList') {
-        shouldUpdate = true;
-      } else if (mutation.type === 'attributes') {
-        const relevantAttributes = ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform'];
-        if (relevantAttributes.includes(mutation.attributeName)) {
-          shouldUpdate = true;
-        }
-      }
-    });
-    
-    if (shouldUpdate) {
-      debouncedUpdate();
-    }
-  });
-  
-  // Observer starten
-  mutationObserver.observe(svg, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['d', 'points', 'cx', 'cy', 'r', 'width', 'height', 'x', 'y', 'transform', 'fill', 'stroke']
-  });
-  
-  // ResizeObserver für Größenänderungen (falls unterstützt)
-  let resizeObserver = null;
-  if (window.ResizeObserver) {
-    resizeObserver = new ResizeObserver(() => {
-      debouncedUpdate();
-    });
-    resizeObserver.observe(svg);
-  }
-  
-  console.log('Dynamischer ViewBox Observer aktiviert');
-  
-  return {
-    mutationObserver,
-    resizeObserver,
-    destroy() {
-      mutationObserver.disconnect();
-      if (resizeObserver) resizeObserver.disconnect();
-      clearTimeout(updateTimeout);
-      console.log('ViewBox Observer deaktiviert');
-    }
-  };
-}
-
-// Automatische Initialisierung - füge dies am Ende deiner app.js hinzu
-let viewBoxObserver = null;
-
-// Initialisierung beim Laden der Seite
-function initializeDynamicViewBox() {
-  // Observer setup
-  viewBoxObserver = setupDynamicViewBoxObserver();
-  
-  // Event Listener für SVG-Laden
-  const svgSelector = document.getElementById('svgSelector');
-  if (svgSelector) {
-    svgSelector.addEventListener('change', () => {
-      // Kurze Verzögerung für SVG-Laden
-      setTimeout(adjustViewBoxToContent, 200);
-    });
-  }
-  
-  // Event Listener für Farbänderungen (falls diese die Größe beeinflussen)
-  document.addEventListener('change', (e) => {
-    if (e.target.type === 'color') {
-      // Sehr kurze Verzögerung für Farbänderungen
-      setTimeout(adjustViewBoxToContent, 50);
-    }
-  });
-  
-  // Initiale Anpassung falls bereits Inhalt vorhanden
-  setTimeout(adjustViewBoxToContent, 100);
-  
-  console.log('Dynamische ViewBox-Anpassung initialisiert');
-}
-
-// Cleanup-Funktion
-function cleanupDynamicViewBox() {
-  if (viewBoxObserver) {
-    viewBoxObserver.destroy();
-    viewBoxObserver = null;
-  }
-}
-
-// Auto-Start wenn DOM bereit ist
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeDynamicViewBox);
-} else {
-  initializeDynamicViewBox();
-}
-
-// Cleanup beim Verlassen der Seite
-window.addEventListener('beforeunload', cleanupDynamicViewBox);
+  // Starte die Initialisierung
+  setTimeout(initCalculator, 300);
+});
