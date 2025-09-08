@@ -14,8 +14,8 @@
       background-color: #e8ecf0;
       color: #2c3e50;
     }
-    
-    .container {
+	
+	.container {
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -79,12 +79,53 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       overflow: hidden;
+      table-layout: fixed;
     }
     
     th {
       padding: 12px;
       text-align: left;
       border-bottom: 1px solid #e9ecef;
+      word-wrap: break-word;
+      overflow: hidden;
+    }
+    
+    th:first-child {
+      width: 18%;
+      min-width: 65px;
+      padding: 8px;
+      font-size: 13px;
+    }
+    
+    th:nth-child(2) {
+      width: 57%;
+      padding: 8px;
+    }
+    
+    th:nth-child(3) {
+      width: 25%;
+      min-width: 70px;
+      padding: 8px;
+    }
+    
+    /* Spezifische Anpassung für mobile Geräte */
+    @media (max-width: 480px) {
+      th:first-child {
+        width: 20%;
+        min-width: 70px;
+        font-size: 12px;
+        padding: 6px;
+      }
+      
+      th:nth-child(2) {
+        width: 55%;
+        padding: 6px;
+      }
+      
+      th:nth-child(3) {
+        width: 25%;
+        padding: 6px;
+      }
     }
     
     tr:last-child th {
@@ -111,6 +152,25 @@
       height: 30px;
       border: none;
       cursor: pointer;
+    }
+    
+    input[type="number"] {
+      width: 70px;
+      max-width: 70px;
+      padding: 4px 6px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .calc-table input[type="number"] {
+      width: 50px;
+      max-width: 50px;
+    }
+    
+    .calc-table td {
+      padding: 8px;
+      white-space: nowrap;
     }
     
     .gallery-button {
@@ -345,7 +405,7 @@
           <tr>
             <td><label for="stripWidth">Streifenbreite:</label></td>
             <td>
-              <input type="number" id="stripWidth" step="0.125" min="0" value="0.75"> inch
+              <input type="number" id="stripWidth" step="0.125" min="0" value="0.75"> inch zzgl. NZ
             </td>
           </tr>
           <tr>
@@ -375,7 +435,7 @@
           <tr>
             <td><label for="frameWidth">Rahmenbreite:</label></td>
             <td>
-              <input type="number" id="frameWidth" step="0.125" min="0" value="2.5"> inch
+              <input type="number" id="frameWidth" step="0.125" min="0" value="2.5"> inch zzgl. NZ
             </td>
           </tr>
           <tr>
@@ -389,6 +449,7 @@
         </table>
       </div>
     </div>
+  </div>
 
   <!-- Modal für Farbgalerie -->
   <div id="colorModal" class="modal">
@@ -404,5 +465,3 @@
 </body>
 
 </html>
-
-
