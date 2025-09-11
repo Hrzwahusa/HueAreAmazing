@@ -4,6 +4,91 @@ let colorPickerMapping = {}; // Mapping zwischen Picker-IDs und SVG-Element-IDs
 let availableSVGFiles = []; // Liste der verfügbaren SVG-Dateien
 let currentSVGFile = ''; // Aktuell geladene SVG-Datei für separates Speichern
 
+// Funktion zur dynamischen Anpassung der ViewBox
+function adjustViewBoxToContent() {
+  const svgContainer = document.getElementById('svgbox');
+  
+  if (!svgContainer) {
+    console.error('SVG Container nicht gefunden');
+    return;
+  }
+  
+  // Alle sichtbaren Elemente im SVG finden (außer dem SVG selbst)
+  const allElements = svgContainer.querySelectorAll('*:not(defs):not(style)');
+  
+  if (allElements.length === 0) {
+    console.log('Keine Elemente im SVG gefunden');
+    return;
+  }
+  
+  let minX = Infinity;
+  let minY = Infinity; 
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  
+  // Bounding Box aller Elemente berechnen
+  allElements.forEach(element => {
+    try {
+      // getBBox() funktioniert für die meisten SVG-Elemente
+      const bbox = element.getBBox();
+      
+      if (bbox.width > 0 && bbox.height > 0) {
+        minX = Math.min(minX, bbox.x);
+        minY = Math.min(minY, bbox.y);
+        maxX = Math.max(maxX, bbox.x + bbox.width);
+        maxY = Math.max(maxY, bbox.y + bbox.height);
+      }
+    } catch (error) {
+      // Fallback für Elemente, die getBBox() nicht unterstützen
+      console.log('getBBox() fehlgeschlagen für Element:', element.tagName);
+      
+      // Versuche Attribute zu lesen
+      const x = parseFloat(element.getAttribute('x') || 0);
+      const y = parseFloat(element.getAttribute('y') || 0);
+      const width = parseFloat(element.getAttribute('width') || 0);
+      const height = parseFloat(element.getAttribute('height') || 0);
+      
+      if (width > 0 && height > 0) {
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x + width);
+        maxY = Math.max(maxY, y + height);
+      }
+    }
+  });
+  
+  // Prüfen ob gültige Bounds gefunden wurden
+  if (minX === Infinity || minY === Infinity || maxX === -Infinity || maxY === -Infinity) {
+    console.warn('Keine gültigen Bounds gefunden, behalte Standard ViewBox');
+    return;
+  }
+  
+  // Padding hinzufügen (optional, für bessere Darstellung)
+  const padding = 10;
+  minX -= padding;
+  minY -= padding;
+  maxX += padding;
+  maxY += padding;
+  
+  // Neue ViewBox berechnen
+  const viewBoxWidth = maxX - minX;
+  const viewBoxHeight = maxY - minY;
+  
+  // ViewBox setzen
+  const newViewBox = `${minX} ${minY} ${viewBoxWidth} ${viewBoxHeight}`;
+  svgContainer.setAttribute('viewBox', newViewBox);
+  
+  console.log('ViewBox angepasst:', newViewBox);
+  console.log('Bounds:', { minX, minY, maxX, maxY, width: viewBoxWidth, height: viewBoxHeight });
+  
+  return {
+    x: minX,
+    y: minY,
+    width: viewBoxWidth,
+    height: viewBoxHeight
+  };
+}
+
 // Maß-Rechner Funktionen - direkt am Anfang definieren!
 function calculateMeasurements() {
   console.log('calculateMeasurements() wurde aufgerufen');
@@ -283,7 +368,7 @@ function loadSelectedSVG() {
   loadSVGContent(selectedFile);
 }
 
-// SVG-Inhalt laden und Farbpicker erstellen (erweitert um Dateiname-Parameter)
+// SVG-Inhalt laden und Farbpicker erstellen (mit dynamischer ViewBox)
 function loadSVGContent(filename = 'svg_10x10.txt') {
   currentSVGFile = filename; // Aktuell geladene Datei merken
   
@@ -297,7 +382,11 @@ function loadSVGContent(filename = 'svg_10x10.txt') {
         // SVG-Elemente mit IDs finden
         findSVGElementsAndCreatePickers();
         
-        setTimeout(() => färbeSVG(), 100);
+        // ViewBox nach dem Laden anpassen und dann färben
+        setTimeout(() => {
+          adjustViewBoxToContent();
+          färbeSVG();
+        }, 100);
       }
     })
     .catch(error => {
@@ -756,17 +845,6 @@ function initializeAllEventListeners() {
   }, 1500);
 }
 
-// Initialisierung beim Laden
-setTimeout(() => {
-  loadAvailableSVGFiles(); // Lädt automatisch die erste verfügbare SVG-Datei
-}, 100);
-
-setTimeout(() => {
-  loadSwatchesData().then(() => {
-    // initializeColors wird automatisch nach der Picker-Erstellung aufgerufen
-  });
-}, 200);
-
 // Funktion zum Hinzufügen der Event Listener für den Rechner
 function initializeCalculatorEvents() {
   const stripWidthEl = document.getElementById('stripWidth');
@@ -794,6 +872,21 @@ function initializeCalculatorEvents() {
   console.log('Calculator Event Listeners hinzugefügt');
 }
 
+// Funktion zur manuellen ViewBox-Anpassung
+function resetViewBox() {
+  adjustViewBoxToContent();
+}
+
+// Funktionen global verfügbar machen
+window.adjustViewBoxToContent = adjustViewBoxToContent;
+window.resetViewBox = resetViewBox;
+window.loadSelectedSVG = loadSelectedSVG;
+window.openGallery = openGallery;
+window.closeModal = closeModal;
+window.showBrandSelection = showBrandSelection;
+window.filterSwatches = filterSwatches;
+window.resetAllColors = resetAllColors;
+
 // Besserer Ansatz: Event Listener verwenden
 document.addEventListener('DOMContentLoaded', function() {
   // Warte bis alle Inhalte geladen sind
@@ -813,3 +906,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // Starte die Initialisierung
   setTimeout(initCalculator, 300);
 });
+
+// Initialisierung beim Laden
+setTimeout(() => {
+  loadAvailableSVGFiles(); // Lädt automatisch die erste verfügbare SVG-Datei
+}, 100);
+
+setTimeout(() => {
+  loadSwatchesData().then(() => {
+    // initializeColors wird automatisch nach der Picker-Erstellung aufgerufen
+  });
+}, 200);
