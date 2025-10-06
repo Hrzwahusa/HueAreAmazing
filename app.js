@@ -104,8 +104,9 @@ function calculateFabricRequirementWithValues(columns, rows) {
   const frameWidth = parseFloat(frameWidthEl.value) || 0;
   
   const technique = techniqueSelect ? techniqueSelect.value : 'logcabin';
-  const seamAllowance = technique === 'fpp' ? 0.75 : 0.5;
-  const seamAllowancePerSide = technique === 'fpp' ? 0.375 : 0.25;
+  const seamAllowancePerSide = 0.25; // Immer 0.25" pro Seite
+  const seamAllowance = seamAllowancePerSide * 2; // 0.5" gesamt
+  const fppExtraAllowance = technique === 'fpp' ? 0.25 : 0; // Extra für FPP
   
   const innerMultipliers = [1.25, 2.75, 4.25, 5.75, 7.25, 2, 3.5, 5, 6.5];
   const outerMultipliers = [1.25, 2.75, 4.25, 5.75, 7.25, 2, 3.5, 5, 6.5, 8];
@@ -121,13 +122,13 @@ function calculateFabricRequirementWithValues(columns, rows) {
   let allColorsFabricTotal = 0;
   
   innerMultipliers.forEach(multiplier => {
-    const stripWidthWithSeam = stripWidth + seamAllowance;
+    const stripWidthWithSeam = stripWidth + seamAllowance + fppExtraAllowance;
     const stripLength = stripWidthWithSeam * multiplier;
     allColorsFabricTotal += stripLength * totalBlocks;
   });
   
   outerMultipliers.forEach(multiplier => {
-    const stripWidthWithSeam = stripWidth + seamAllowance;
+    const stripWidthWithSeam = stripWidth + seamAllowance + fppExtraAllowance;
     const stripLength = stripWidthWithSeam * multiplier;
     allColorsFabricTotal += stripLength * totalBlocks;
   });
@@ -172,15 +173,16 @@ function calculateFabricRequirementWithValues(columns, rows) {
   }
   
   const hintText = document.getElementById('fabricHintText');
-  if (hintText) {
-    const techniqueName = technique === 'fpp' ? 'FPP (Foundation Paper Piecing)' : 'Log Cabin (klassisches Patchwork)';
-    hintText.innerHTML = `
-      * Berechnung basiert auf 42" Stoffbreite (WOF)<br>
-      * Technik: ${techniqueName}<br>
-      * Inkl. ${seamAllowancePerSide}" Nahtzugabe pro Seite<br>
-      * Angaben ohne Verschnitt
-    `;
-  }
+if (hintText) {
+  const techniqueName = technique === 'fpp' ? 'FPP (Foundation Paper Piecing)' : 'Log Cabin (klassisches Patchwork)';
+  const fppNote = technique === 'fpp' ? '<br>* Inkl. 0.25" Extra-Zugabe für FPP' : '';
+  hintText.innerHTML = `
+    * Berechnung basiert auf 42" Stoffbreite (WOF)<br>
+    * Technik: ${techniqueName}<br>
+    * Inkl. ${seamAllowancePerSide}" Nahtzugabe pro Seite${fppNote}<br>
+    * Angaben ohne Verschnitt
+  `;
+}
   
   console.log(`Stoffbedarfsberechnung abgeschlossen (${technique}, ${seamAllowancePerSide}" Nahtzugabe, 42" Stoffbreite, ${numberOfColors} Farben)`);
 }
@@ -1148,7 +1150,7 @@ async function generatePDF() {
     pdf.text('Hue Are Amazing', pageWidth / 2, yPosition, { align: 'center' });
     
     // "by meika" rechts daneben (kursiv, grau, kleiner)
-    const titleWidth = pdf.getTextWidth('Hue Are Amazing');
+    const titleWidth = pdf.getTextWidth('Hue Are Amazing!');
     pdf.setFontSize(12);
     pdf.setFont(undefined, 'italic');
     pdf.setTextColor(100, 100, 100); // Grau

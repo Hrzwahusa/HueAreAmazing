@@ -443,7 +443,7 @@
   </style>
 </head>
 <body>
-  <h2>Hue Are Amazing!</h2>
+  <h2 style="font-size: 2.5em;">Hue Are Amazing! <span style="font-size: 0.5em; color: #888; font-style: italic; font-weight: normal;">by meika</span></h2>
   
   <div class="container">
     <div class="svg-container">
@@ -462,7 +462,7 @@
         <p>Lade SVG-Daten...</p>
       </div>
       <button class="reset-button" onclick="resetAllColors()">Alle Farben zurücksetzen</button>
-      <button style="background-color: #17a2b8; margin-left: 10px;" onclick="generatePDF()">PDF erstellen</button>
+      
       
       <!-- Maß-Rechner -->
       <div class="measurement-calculator">
@@ -530,8 +530,11 @@
           * Angaben ohne Verschnitt
         </p>
       </div>
+	  <button style="background-color: #17a2b8; margin-left: 10px;" onclick="generatePDF()">PDF erstellen</button>
     </div>
+	
   </div>
+  
 
       <!-- Modal für Farbgalerie -->
   <div id="colorModal" class="modal">
