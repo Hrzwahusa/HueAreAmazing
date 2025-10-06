@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hue Are Amazing!</title>
-  
   <style>
     body {
       margin: 0;
@@ -31,7 +31,7 @@
       border-radius: 8px;
       border: none;
       
-      max-width: 300px; /* Gleiche Breite wie SVG */
+      max-width: 300px;
     }
     
     .svg-selection label {
@@ -43,7 +43,7 @@
     
     .svg-selection select {
       width: 100%;
-      max-width: 300px; /* Begrenzt die Select-Breite */
+      max-width: 300px;
       padding: 8px 12px;
       font-size: 14px;
       border: 1px solid #ced4da;
@@ -108,7 +108,6 @@
       padding: 8px;
     }
     
-    /* Spezifische Anpassung für mobile Geräte */
     @media (max-width: 480px) {
       th:first-child {
         width: 20%;
@@ -173,13 +172,48 @@
       white-space: nowrap;
     }
     
-    /* Responsive Maß-Rechner für mobile Geräte */
+    tr:last-child th {
+      border-bottom: none;
+    }
+    
+    .color-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    /* Stoffbedarf-Tabelle Styling */
+    .fabric-table {
+      margin-top: 15px;
+      background-color: #e7f3ff;
+    }
+    
+    .fabric-table td {
+      padding: 8px;
+    }
+    
+    .fabric-table .fabric-label {
+      font-weight: bold;
+      color: #0066cc;
+    }
+    
+    .fabric-table .fabric-value {
+      font-size: 13px;
+      color: #333;
+    }
+    
+    .fabric-total {
+      background-color: #d0e7ff !important;
+      font-weight: bold;
+    }
+    
     @media (max-width: 480px) {
       .calc-table {
         display: block;
       }
       
-      .calc-table tr {
+      .calc-table tr, .fabric-table tr {
         display: block;
         margin-bottom: 10px;
         background-color: white;
@@ -188,14 +222,14 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       }
       
-      .calc-table td {
+      .calc-table td, .fabric-table td {
         display: block;
         padding: 4px 0;
         white-space: normal;
         border: none;
       }
       
-      .calc-table td:first-child {
+      .calc-table td:first-child, .fabric-table td:first-child {
         font-weight: bold;
         margin-bottom: 4px;
       }
@@ -391,7 +425,6 @@
       padding: 20px;
     }
     
-    /* Desktop Layout - ab 768px */
     @media (min-width: 768px) {
       .container {
         flex-direction: row;
@@ -421,16 +454,15 @@
         </select>
       </div>
       <svg id="svgbox" name="svgbox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 670 670">
-            <!-- Hier kommt die svg rein -->
       </svg>
     </div>
     
- <div class="controls-container">
+    <div class="controls-container">
       <div id="colorPickersContainer">
-        <!-- Farbpicker werden hier dynamisch erstellt -->
         <p>Lade SVG-Daten...</p>
       </div>
       <button class="reset-button" onclick="resetAllColors()">Alle Farben zurücksetzen</button>
+      <button style="background-color: #17a2b8; margin-left: 10px;" onclick="generatePDF()">PDF erstellen</button>
       
       <!-- Maß-Rechner -->
       <div class="measurement-calculator">
@@ -447,16 +479,12 @@
             <td id="blockSize">-</td>
           </tr>
           <tr>
-            <td><label for="columns">Anzahl Spalten:</label></td>
-            <td>
-              <input type="number" id="columns" min="1" value="10">
-            </td>
+            <td><label>Anzahl Spalten:</label></td>
+            <td id="columns">-</td>
           </tr>
           <tr>
-            <td><label for="rows">Anzahl Zeilen:</label></td>
-            <td>
-              <input type="number" id="rows" min="1" value="10">
-            </td>
+            <td><label>Anzahl Zeilen:</label></td>
+            <td id="rows">-</td>
           </tr>
           <tr>
             <td><label>Finale Breite ohne Rahmen:</label></td>
@@ -481,11 +509,31 @@
             <td id="finalHeightWithFrame">-</td>
           </tr>
         </table>
+        
+        <!-- Stoffbedarfsrechner -->
+        <h3>Stoffbedarf</h3>
+        <div style="margin-bottom: 15px;">
+          <label for="techniqueSelect" style="display: block; margin-bottom: 5px; font-weight: bold; color: #495057;">Technik:</label>
+          <select id="techniqueSelect" style="width: 100%; max-width: 300px; padding: 8px 12px; font-size: 14px; border: 1px solid #ced4da; border-radius: 4px; background-color: white; color: #495057; cursor: pointer;">
+            <option value="logcabin">Log Cabin (klassisches Patchwork)</option>
+            <option value="fpp">FPP (Foundation Paper Piecing)</option>
+          </select>
+        </div>
+        <table class="calc-table fabric-table">
+          <tr>
+            <td colspan="2" style="text-align: center; color: #666; font-style: italic;">Wird nach SVG-Laden berechnet...</td>
+          </tr>
+        </table>
+        <p id="fabricHintText" style="font-size: 11px; color: #666; margin-top: 8px;">
+          * Berechnung basiert auf 42" Stoffbreite (WOF)<br>
+          * Inkl. 0.25" Nahtzugabe pro Seite<br>
+          * Angaben ohne Verschnitt
+        </p>
       </div>
     </div>
   </div>
 
-  <!-- Modal für Farbgalerie -->
+      <!-- Modal für Farbgalerie -->
   <div id="colorModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
@@ -493,9 +541,11 @@
     </div>
   </div>
 
-  <!-- JavaScript aufgeteilt -->
+  <!-- JavaScript -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvg@2.0.0/dist/browser/canvg.min.js"></script>
   <script src="app.js"></script>
 
 </body>
-
 </html>
