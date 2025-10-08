@@ -108,7 +108,7 @@ th:nth-child(3) {
   padding: 8px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   /* Überschrift anpassen */
   h2 {
     font-size: 1.8em !important;
@@ -158,14 +158,23 @@ th:nth-child(3) {
   #colorPickersContainer table th {
     font-size: 11px;
     padding: 6px 3px;
+    white-space: nowrap;
+  }
+  
+  #colorPickersContainer table th:first-child {
+    white-space: nowrap;
   }
   
   #colorPickersContainer table th label {
     font-size: 11px;
+    white-space: nowrap;
+    display: inline;
   }
   
   .drag-handle {
     font-size: 14px;
+    display: inline-block;
+    white-space: nowrap;
   }
   
   .color-control {
