@@ -560,7 +560,7 @@ function createColorPickers(elementIds) {
     return;
   }
   
-  let tableHTML = '<table>';
+  let tableHTML = '<table style="width: 100% !important; max-width: 100% !important;">';
   
   elementIds.forEach((elementId, index) => {
     let label, pickerId;

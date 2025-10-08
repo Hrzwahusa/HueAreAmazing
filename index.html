@@ -30,6 +30,7 @@
   background-color: transparent;
   border-radius: 8px;
   border: none;
+  
   max-width: 300px;
 }
 
@@ -108,21 +109,143 @@ th:nth-child(3) {
 }
 
 @media (max-width: 480px) {
+  /* Überschrift anpassen */
+  h2 {
+    font-size: 1.8em !important;
+  }
+  
+  h2 span {
+    display: block;
+    margin-top: 5px;
+  }
+  
+  /* Container auf volle Breite */
+  .controls-container {
+    width: 100%;
+    padding-left: 0;
+  }
+  
+  .measurement-calculator {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Allgemeines Table Styling überschreiben */
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
   th:first-child {
     width: 20%;
     min-width: 70px;
-    font-size: 12px;
-    padding: 6px;
+    font-size: 11px;
+    padding: 6px 4px;
   }
   
   th:nth-child(2) {
-    width: 55%;
-    padding: 6px;
+    width: 80%;
+    padding: 6px 4px;
   }
   
   th:nth-child(3) {
     width: 25%;
     padding: 6px;
+  }
+  
+  /* Farbauswahl spezifisch */
+  #colorPickersContainer table th {
+    font-size: 11px;
+    padding: 6px 3px;
+  }
+  
+  #colorPickersContainer table th label {
+    font-size: 11px;
+  }
+  
+  .drag-handle {
+    font-size: 14px;
+  }
+  
+  .color-control {
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  
+  input[type="color"] {
+    width: 35px;
+    height: 25px;
+    flex-shrink: 0;
+  }
+  
+  .gallery-button {
+    padding: 4px 6px;
+    font-size: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .swatch-info {
+    font-size: 9px;
+    max-width: 120px;
+    line-height: 1.2;
+  }
+  
+  /* Tabellen auf volle Breite */
+  .calc-table,
+  .fabric-table {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    table-layout: auto !important;
+    display: table !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  .calc-table tr,
+  .fabric-table tr {
+    display: table-row !important;
+    width: 100% !important;
+  }
+  
+  .calc-table td,
+  .fabric-table td {
+    display: table-cell !important;
+    padding: 6px 4px;
+    font-size: 11px;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.3;
+    box-sizing: border-box;
+    vertical-align: middle;
+  }
+  
+  .calc-table td:first-child,
+  .fabric-table td:first-child {
+    font-size: 11px;
+    width: 40%;
+    padding-right: 6px;
+  }
+  
+  .calc-table td:nth-child(2),
+  .fabric-table td:nth-child(2) {
+    font-size: 11px;
+    width: 60%;
+    padding-left: 4px;
+  }
+  
+  .calc-table input[type="number"] {
+    width: 50px;
+    max-width: 50px;
+    font-size: 12px;
+    padding: 3px 4px;
+    margin-right: 4px;
+  }
+  
+  .calc-table label {
+    font-size: 11px;
   }
 }
 
@@ -202,47 +325,43 @@ tr:last-child th {
   color: #333;
 }
 
-/* Maß-Rechner Tabelle - rechte Spalte */
+/* Maß-Rechner Tabelle - gleiches Styling wie Stoffbedarf */
+.calc-table {
+  background-color: #e7f3ff;
+}
+
+.calc-table td {
+  padding: 8px;
+}
+
+.calc-table td:first-child {
+  font-weight: bold;
+  color: #0066cc;
+}
+
 .calc-table td:nth-child(2) {
   font-size: 13px;
+  color: #333;
+}
+
+/* Hervorhebung für finale Maße (Zeilen 5, 6, 8, 9) */
+.calc-table tr:nth-child(5),
+.calc-table tr:nth-child(6),
+.calc-table tr:nth-child(8),
+.calc-table tr:nth-child(9) {
+  background-color: #d0e7ff !important;
+}
+
+.calc-table tr:nth-child(5) td,
+.calc-table tr:nth-child(6) td,
+.calc-table tr:nth-child(8) td,
+.calc-table tr:nth-child(9) td {
+  font-weight: bold;
 }
 
 .fabric-total {
   background-color: #d0e7ff !important;
   font-weight: bold;
-}
-
-@media (max-width: 480px) {
-  .calc-table {
-    display: block;
-  }
-  
-  .calc-table tr, .fabric-table tr {
-    display: block;
-    margin-bottom: 10px;
-    background-color: white;
-    border-radius: 4px;
-    padding: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-  
-  .calc-table td, .fabric-table td {
-    display: block;
-    padding: 4px 0;
-    white-space: normal;
-    border: none;
-  }
-  
-  .calc-table td:first-child, .fabric-table td:first-child {
-    font-weight: bold;
-    margin-bottom: 4px;
-  }
-  
-  .calc-table input[type="number"] {
-    width: 80px;
-    max-width: 80px;
-    margin-right: 8px;
-  }
 }
 
 .gallery-button {
@@ -469,9 +588,9 @@ button:hover {
       
       
       <!-- Maß-Rechner -->
-      <div class="measurement-calculator">
+      <div class="measurement-calculator" style="width: 100%; padding: 0; margin: 0;">
         <h3>Maß-Rechner</h3>
-        <table class="calc-table">
+        <table class="calc-table" style="width: 100% !important; max-width: 100% !important;">
           <tr>
             <td><label for="stripWidth">Streifenbreite:</label></td>
             <td>
@@ -516,14 +635,14 @@ button:hover {
         
         <!-- Stoffbedarfsrechner -->
         <h3>Stoffbedarf</h3>
-        <div style="margin-bottom: 15px;">
+        <div style="margin-bottom: 15px; width: 100%;">
           <label for="techniqueSelect" style="display: block; margin-bottom: 5px; font-weight: bold; color: #495057;">Technik:</label>
           <select id="techniqueSelect" style="width: 100%; max-width: 300px; padding: 8px 12px; font-size: 14px; border: 1px solid #ced4da; border-radius: 4px; background-color: white; color: #495057; cursor: pointer;">
             <option value="logcabin">Log Cabin (klassisches Patchwork)</option>
             <option value="fpp">FPP (Foundation Paper Piecing)</option>
           </select>
         </div>
-        <table class="calc-table fabric-table">
+        <table class="calc-table fabric-table" style="width: 100% !important; max-width: 100% !important;">
           <tr>
             <td colspan="2" style="text-align: center; color: #666; font-style: italic;">Wird nach SVG-Laden berechnet...</td>
           </tr>
