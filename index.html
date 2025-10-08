@@ -170,7 +170,8 @@ th:nth-child(3) {
   
   .color-control {
     gap: 4px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
   
   input[type="color"] {
@@ -188,8 +189,12 @@ th:nth-child(3) {
   
   .swatch-info {
     font-size: 9px;
-    max-width: 120px;
+    max-width: 100%;
+    width: 100%;
     line-height: 1.2;
+    word-wrap: break-word;
+    white-space: normal;
+    margin-top: 2px;
   }
   
   /* Tabellen auf volle Breite */
