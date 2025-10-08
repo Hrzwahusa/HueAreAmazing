@@ -8,438 +8,442 @@
   <title>Hue Are Amazing!</title>
   <style>
     body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background-color: #e8ecf0;
-      color: #2c3e50;
-    }
-	
-	.container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    
-    .svg-container {
-      width: 100%;
-    }
-    
-    .svg-selection {
-      margin-bottom: 15px;      
-      background-color: transparent;
-      border-radius: 8px;
-      border: none;
-      
-      max-width: 300px;
-    }
-    
-    .svg-selection label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #495057;
-    }
-    
-    .svg-selection select {
-      width: 100%;
-      max-width: 300px;
-      padding: 8px 12px;
-      font-size: 14px;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      background-color: white;
-      color: #495057;
-      cursor: pointer;
-    }
-    
-    .svg-selection select:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
-    }
-    
-    svg {
-      border: none;
-      width: 100%;
-      height: auto;
-      max-width: 670px;
-      background-color: transparent;
-      border-radius: 8px;
-    }
-    
-    .controls-container {
-      width: 100%;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      overflow: hidden;
-      table-layout: fixed;
-    }
-    
-    th {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #e9ecef;
-      word-wrap: break-word;
-      overflow: hidden;
-    }
-    
-    th:first-child {
-      width: 18%;
-      min-width: 65px;
-      padding: 8px;
-      font-size: 13px;
-    }
-    
-    th:nth-child(2) {
-      width: 57%;
-      padding: 8px;
-    }
-    
-    th:nth-child(3) {
-      width: 25%;
-      min-width: 70px;
-      padding: 8px;
-    }
-    
-    @media (max-width: 480px) {
-      th:first-child {
-        width: 20%;
-        min-width: 70px;
-        font-size: 12px;
-        padding: 6px;
-      }
-      
-      th:nth-child(2) {
-        width: 55%;
-        padding: 6px;
-      }
-      
-      th:nth-child(3) {
-        width: 25%;
-        padding: 6px;
-      }
-    }
-    
-    tr:last-child th {
-      border-bottom: none;
-    }
-    
-    .color-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    
-    .swatch-info {
-      font-size: 11px;
-      color: #666;
-      font-style: italic;
-      max-width: 200px;
-      word-wrap: break-word;
-    }
-    
-    input[type="color"] {
-      width: 50px;
-      height: 30px;
-      border: none;
-      cursor: pointer;
-    }
-    
-    input[type="number"] {
-      width: 70px;
-      max-width: 70px;
-      padding: 4px 6px;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    
-    .calc-table input[type="number"] {
-      width: 50px;
-      max-width: 50px;
-    }
-    
-    .calc-table td {
-      padding: 8px;
-      white-space: nowrap;
-    }
-    
-    tr:last-child th {
-      border-bottom: none;
-    }
-    
-    .color-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    
-    /* Stoffbedarf-Tabelle Styling */
-    .fabric-table {
-      margin-top: 15px;
-      background-color: #e7f3ff;
-    }
-    
-    .fabric-table td {
-      padding: 8px;
-    }
-    
-    .fabric-table .fabric-label {
-      font-weight: bold;
-      color: #0066cc;
-    }
-    
-    .fabric-table .fabric-value {
-      font-size: 13px;
-      color: #333;
-    }
-    
-    .fabric-total {
-      background-color: #d0e7ff !important;
-      font-weight: bold;
-    }
-    
-    @media (max-width: 480px) {
-      .calc-table {
-        display: block;
-      }
-      
-      .calc-table tr, .fabric-table tr {
-        display: block;
-        margin-bottom: 10px;
-        background-color: white;
-        border-radius: 4px;
-        padding: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      }
-      
-      .calc-table td, .fabric-table td {
-        display: block;
-        padding: 4px 0;
-        white-space: normal;
-        border: none;
-      }
-      
-      .calc-table td:first-child, .fabric-table td:first-child {
-        font-weight: bold;
-        margin-bottom: 4px;
-      }
-      
-      .calc-table input[type="number"] {
-        width: 80px;
-        max-width: 80px;
-        margin-right: 8px;
-      }
-    }
-    
-    .gallery-button {
-      padding: 5px 10px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    
-    .gallery-button:hover {
-      background-color: #218838;
-    }
-    
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    
-    button:hover {
-      background-color: #0056b3;
-    }
-    
-    .reset-button {
-      background-color: #dc3545;
-      margin-left: 10px;
-    }
-    
-    .reset-button:hover {
-      background-color: #c82333;
-    }
-    
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-    
-    .modal-content {
-      background-color: #f8f9fa;
-      margin: 5% auto;
-      padding: 20px;
-      border-radius: 12px;
-      width: 80%;
-      max-width: 800px;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    
-    .close:hover,
-    .close:focus {
-      color: black;
-    }
-    
-    .brand-selection {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .brand-item {
-      padding: 10px;
-      border: 2px solid #ddd;
-      border-radius: 6px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .brand-item:hover {
-      border-color: #007bff;
-      background-color: #f8f9fa;
-    }
-    
-    .brand-item h3 {
-      margin: 0 0 4px 0;
-      font-size: 14px;
-      font-weight: bold;
-    }
-    
-    .brand-item p {
-      margin: 0;
-      font-size: 11px;
-      color: #666;
-      line-height: 1.2;
-    }
-    
-    .color-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      gap: 8px;
-      margin-top: 20px;
-    }
-    
-    .color-item {
-      text-align: center;
-      cursor: pointer;
-      padding: 6px;
-      border: 2px solid transparent;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-    }
-    
-    .color-item:hover {
-      border-color: #007bff;
-      background-color: #f8f9fa;
-    }
-    
-    .color-square {
-      width: 40px;
-      height: 40px;
-      margin: 0 auto 6px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-    }
-    
-    .color-label {
-      font-size: 12px;
-      text-align: center;
-      word-wrap: break-word;
-    }
-    
-    .modal-title {
-      margin-top: 0;
-      margin-bottom: 20px;
-    }
-    
-    .back-button {
-      background-color: #6c757d;
-      margin-right: 10px;
-    }
-    
-    .back-button:hover {
-      background-color: #545b62;
-    }
-    
-    .search-container {
-      margin-bottom: 20px;
-    }
-    
-    .search-input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: 2px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    
-    .search-input:focus {
-      outline: none;
-      border-color: #007bff;
-    }
-    
-    .no-results {
-      text-align: center;
-      color: #666;
-      font-style: italic;
-      margin-top: 20px;
-      padding: 20px;
-    }
-    
-    @media (min-width: 768px) {
-      .container {
-        flex-direction: row;
-        align-items: flex-start;
-      }
-      
-      .svg-container {
-        width: 60%;
-      }
-      
-      .controls-container {
-        width: 40%;
-        padding-left: 20px;
-      }
-    }
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #e8ecf0;
+  color: #2c3e50;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.svg-container {
+  width: 100%;
+}
+
+.svg-selection {
+  margin-bottom: 15px;      
+  background-color: transparent;
+  border-radius: 8px;
+  border: none;
+  max-width: 300px;
+}
+
+.svg-selection label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #495057;
+}
+
+.svg-selection select {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: white;
+  color: #495057;
+  cursor: pointer;
+}
+
+.svg-selection select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+svg {
+  border: none;
+  width: 100%;
+  height: auto;
+  max-width: 670px;
+  background-color: transparent;
+  border-radius: 8px;
+}
+
+.controls-container {
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  table-layout: fixed;
+}
+
+th {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+th:first-child {
+  width: 18%;
+  min-width: 65px;
+  padding: 8px;
+  font-size: 13px;
+}
+
+th:nth-child(2) {
+  width: 57%;
+  padding: 8px;
+}
+
+th:nth-child(3) {
+  width: 25%;
+  min-width: 70px;
+  padding: 8px;
+}
+
+@media (max-width: 480px) {
+  th:first-child {
+    width: 20%;
+    min-width: 70px;
+    font-size: 12px;
+    padding: 6px;
+  }
+  
+  th:nth-child(2) {
+    width: 55%;
+    padding: 6px;
+  }
+  
+  th:nth-child(3) {
+    width: 25%;
+    padding: 6px;
+  }
+}
+
+tr:last-child th {
+  border-bottom: none;
+}
+
+.color-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.swatch-info {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+input[type="color"] {
+  width: 50px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+}
+
+input[type="number"] {
+  width: 70px;
+  max-width: 70px;
+  padding: 4px 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.calc-table input[type="number"] {
+  width: 50px;
+  max-width: 50px;
+}
+
+.calc-table td {
+  padding: 8px;
+  white-space: nowrap;
+}
+
+tr:last-child th {
+  border-bottom: none;
+}
+
+.color-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Stoffbedarf-Tabelle Styling */
+.fabric-table {
+  margin-top: 15px;
+  background-color: #e7f3ff;
+}
+
+.fabric-table td {
+  padding: 8px;
+}
+
+.fabric-table .fabric-label {
+  font-weight: bold;
+  color: #0066cc;
+}
+
+.fabric-table .fabric-value {
+  font-size: 13px;
+  color: #333;
+}
+
+/* Maß-Rechner Tabelle - rechte Spalte */
+.calc-table td:nth-child(2) {
+  font-size: 13px;
+}
+
+.fabric-total {
+  background-color: #d0e7ff !important;
+  font-weight: bold;
+}
+
+@media (max-width: 480px) {
+  .calc-table {
+    display: block;
+  }
+  
+  .calc-table tr, .fabric-table tr {
+    display: block;
+    margin-bottom: 10px;
+    background-color: white;
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .calc-table td, .fabric-table td {
+    display: block;
+    padding: 4px 0;
+    white-space: normal;
+    border: none;
+  }
+  
+  .calc-table td:first-child, .fabric-table td:first-child {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .calc-table input[type="number"] {
+    width: 80px;
+    max-width: 80px;
+    margin-right: 8px;
+  }
+}
+
+.gallery-button {
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.gallery-button:hover {
+  background-color: #218838;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.reset-button {
+  background-color: #dc3545;
+  margin-left: 10px;
+}
+
+.reset-button:hover {
+  background-color: #c82333;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #f8f9fa;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+}
+
+.brand-selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.brand-item {
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.brand-item:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.brand-item h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.brand-item p {
+  margin: 0;
+  font-size: 11px;
+  color: #666;
+  line-height: 1.2;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.color-item {
+  text-align: center;
+  cursor: pointer;
+  padding: 6px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.color-item:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.color-square {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.color-label {
+  font-size: 12px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  background-color: #6c757d;
+  margin-right: 10px;
+}
+
+.back-button:hover {
+  background-color: #545b62;
+}
+
+.search-container {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.no-results {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .svg-container {
+    width: 60%;
+  }
+  
+  .controls-container {
+    width: 40%;
+    padding-left: 20px;
+  }
+}
   </style>
 </head>
 <body>
