@@ -111,11 +111,12 @@ function calculateFabricRequirementWithValues(columns, rows) {
   const innerMultipliers = [1.25, 2.75, 4.25, 5.75, 7.25, 2, 3.5, 5, 6.5];
   const outerMultipliers = [1.25, 2.75, 4.25, 5.75, 7.25, 2, 3.5, 5, 6.5, 8];
   
-  const totalBlocks = columns * rows;
+  const totalBlocks = columns * columns;
   const fabricWidth = 42;
   const inchToCm = 2.54;
   
   const numberOfColors = svgElementIds.length - 1;
+  const isRectangular = columns !== rows;
   
   console.log(`Berechne mit ${numberOfColors} Farben, ${columns}x${rows} Blöcke`);
   
@@ -134,7 +135,8 @@ function calculateFabricRequirementWithValues(columns, rows) {
   });
   
   const fabricPerColor = allColorsFabricTotal / numberOfColors;
-  const fabricLengthPerColor = fabricPerColor / fabricWidth;
+  const fabricLengthPerColor = Math.ceil(fabricPerColor / fabricWidth);
+  
   
   const blockSize = stripWidth * 10;
   const quiltWidthNoFrame = blockSize * columns;
@@ -144,26 +146,47 @@ function calculateFabricRequirementWithValues(columns, rows) {
   const frameTopBottom = (quiltWidthNoFrame + 2 * frameWidthWithSeam) * frameWidthWithSeam * 2;
   const frameSides = quiltHeightNoFrame * frameWidthWithSeam * 2;
   const frameFabricTotal = frameTopBottom + frameSides;
-  const frameFabricLength = frameFabricTotal / fabricWidth;
+  const frameFabricLength = Math.ceil(frameFabricTotal / fabricWidth);
   
-  const totalLength = (allColorsFabricTotal / fabricWidth) + frameFabricLength;
+  const totalLength = Math.ceil((allColorsFabricTotal / fabricWidth) + frameFabricLength);
   
   let tableHTML = '<table class="calc-table fabric-table">';
   
-  tableHTML += `
+  if(isRectangular) {
+	  const fabricLengthFirstandLast = fabricLengthPerColor / 2;
+	  
+	  tableHTML += `
     <tr>
-      <td class="fabric-label">Pro Farbe (${numberOfColors} Farben):</td>
-      <td class="fabric-value">${fabricLengthPerColor.toFixed(1)} inch (${(fabricLengthPerColor * inchToCm).toFixed(1)} cm)</td>
+      <td class="fabric-label">Erste und letzte Farbe:</td>
+      <td class="fabric-value">${fabricLengthFirstandLast.toFixed(0)} inch (${(fabricLengthFirstandLast * inchToCm).toFixed(1)} cm)</td>
+    </tr>
+	<tr>
+      <td class="fabric-label">Restliche Farben (${numberOfColors-2} Farben):</td>
+      <td class="fabric-value">${fabricLengthPerColor.toFixed(0)} inch (${(fabricLengthPerColor * inchToCm).toFixed(1)} cm)</td>
     </tr>
     <tr>
       <td class="fabric-label">Rahmen:</td>
-      <td class="fabric-value">${frameFabricLength.toFixed(1)} inch (${(frameFabricLength * inchToCm).toFixed(1)} cm)</td>
+      <td class="fabric-value">${frameFabricLength.toFixed(0)} inch (${(frameFabricLength * inchToCm).toFixed(1)} cm)</td>
     </tr>
     <tr class="fabric-total">
       <td class="fabric-label">Gesamt:</td>
-      <td class="fabric-value">${totalLength.toFixed(1)} inch (${(totalLength * inchToCm).toFixed(1)} cm)</td>
+      <td class="fabric-value">${totalLength.toFixed(0)} inch (${(totalLength * inchToCm).toFixed(1)} cm)</td>
     </tr>
-  `;
+  `;} else {tableHTML += `
+    <tr>
+      <td class="fabric-label">Pro Farbe (${numberOfColors} Farben):</td>
+      <td class="fabric-value">${fabricLengthPerColor.toFixed(0)} inch (${(fabricLengthPerColor * inchToCm).toFixed(1)} cm)</td>
+    </tr>
+    <tr>
+      <td class="fabric-label">Rahmen:</td>
+      <td class="fabric-value">${frameFabricLength.toFixed(0)} inch (${(frameFabricLength * inchToCm).toFixed(1)} cm)</td>
+    </tr>
+    <tr class="fabric-total">
+      <td class="fabric-label">Gesamt:</td>
+      <td class="fabric-value">${totalLength.toFixed(0)} inch (${(totalLength * inchToCm).toFixed(1)} cm)</td>
+    </tr>
+  `;}
+	  
   
   tableHTML += '</table>';
   
